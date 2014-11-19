@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import cn.inta.generic.util.GeneratorUtils;
+import cn.inta.generic.util.JavaCodeFormatter;
 
 /**
  * 
@@ -105,7 +106,13 @@ public class GenericService {
 
 				FileOutputStream fos = new FileOutputStream(file);
 				contentBuffer.append("}\n");
-				fos.write(contentBuffer.toString().getBytes());
+				String content = "";
+				try {
+					content = JavaCodeFormatter.format(contentBuffer.toString());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				fos.write(content.getBytes());
 				fos.close();
 			}
 			rs.close();

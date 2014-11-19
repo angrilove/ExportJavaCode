@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import cn.inta.generic.util.GeneratorUtils;
+import cn.inta.generic.util.JavaCodeFormatter;
 
 /**
  * 
@@ -39,7 +40,7 @@ public class GenericPojo {
 			String basePackage = GeneratorUtils.getProperty("basepackage");
 			String pojoPackage = basePackage + ".pojo";
 			boolean removeTablePrefix = StringUtils.equalsIgnoreCase("true",
-					GeneratorUtils.getProperty("tableschema")) ? true : false;
+					GeneratorUtils.getProperty("removetableprefix")) ? true : false;
 			File dir = new File((tableSchema + "." + pojoPackage).replace(".",
 					"\\"));
 			if (dir.exists()) {
@@ -90,83 +91,90 @@ public class GenericPojo {
 					String propertyName = WordUtils.capitalize(
 							columns.getString("COLUMN_NAME").replace("-", " ")
 									.replace("_", " ")).replace(" ", "");
-					String filedName = StringUtils.uncapitalize(propertyName);
+					if (propertyName.equalsIgnoreCase("return"))
+						propertyName += propertyName + "0";
+					String fieldName = StringUtils.uncapitalize(propertyName);
 					String dataType = columns.getString("DATA_TYPE");
 					String columnComment = columns.getString("COLUMN_COMMENT");
 					if (dataType.contains("int")) {
 						contentBuffer.append(indent).append("private Integer ")
-								.append(filedName).append("; // ")
+								.append(fieldName).append("; // ")
 								.append(columnComment).append("\n");
 						getterSetterBuffer.append(indent)
 								.append("public Integer get")
 								.append(propertyName).append("() {\n")
 								.append(indent).append(indent)
-								.append("return ").append(filedName)
+								.append("return ").append(fieldName)
 								.append(";\n").append(indent).append("}\n")
 								.append(indent).append("public void set")
 								.append(propertyName).append("(")
-								.append("Integer ").append(filedName)
+								.append("Integer ").append(fieldName)
 								.append(") {\n").append(indent).append(indent)
-								.append("this.").append(filedName)
-								.append(" = ").append(filedName).append(";\n")
+								.append("this.").append(fieldName)
+								.append(" = ").append(fieldName).append(";\n")
 								.append(indent).append("}\n");
 					} else if (dataType.contains("double")) {
 						contentBuffer.append(indent).append("private Double ")
-								.append(filedName).append("; // ")
+								.append(fieldName).append("; // ")
 								.append(columnComment).append("\n");
 						getterSetterBuffer.append(indent)
 								.append("public Double get")
 								.append(propertyName).append("() {\n")
 								.append(indent).append(indent)
-								.append("return ").append(filedName)
+								.append("return ").append(fieldName)
 								.append(";\n").append(indent).append("}\n")
 								.append(indent).append("public void set")
 								.append(propertyName).append("(")
-								.append("Double ").append(filedName)
+								.append("Double ").append(fieldName)
 								.append(") {\n").append(indent).append(indent)
-								.append("this.").append(filedName)
-								.append(" = ").append(filedName).append(";\n")
+								.append("this.").append(fieldName)
+								.append(" = ").append(fieldName).append(";\n")
 								.append(indent).append("}\n");
 					} else if (dataType.contains("time")
 							|| dataType.contains("date")) {
 						contentBuffer.append(indent).append("private Date ")
-								.append(filedName).append("; // ")
+								.append(fieldName).append("; // ")
 								.append(columnComment).append("\n");
 						getterSetterBuffer.append(indent)
 								.append("public Date get").append(propertyName)
 								.append("() {\n").append(indent).append(indent)
-								.append("return ").append(filedName)
+								.append("return ").append(fieldName)
 								.append(";\n").append(indent).append("}\n")
 								.append(indent).append("public void set")
 								.append(propertyName).append("(")
-								.append("Date ").append(filedName)
+								.append("Date ").append(fieldName)
 								.append(") {\n").append(indent).append(indent)
-								.append("this.").append(filedName)
-								.append(" = ").append(filedName).append(";\n")
+								.append("this.").append(fieldName)
+								.append(" = ").append(fieldName).append(";\n")
 								.append(indent).append("}\n");
 					} else {
 						contentBuffer.append(indent).append("private String ")
-								.append(filedName).append("; // ")
+								.append(fieldName).append("; // ")
 								.append(columnComment).append("\n");
 						getterSetterBuffer.append(indent)
 								.append("public String get")
 								.append(propertyName).append("() {\n")
 								.append(indent).append(indent)
-								.append("return ").append(filedName)
+								.append("return ").append(fieldName)
 								.append(";\n").append(indent).append("}\n")
 								.append(indent).append("public void set")
 								.append(propertyName).append("(")
-								.append("String ").append(filedName)
+								.append("String ").append(fieldName)
 								.append(") {\n").append(indent).append(indent)
-								.append("this.").append(filedName)
-								.append(" = ").append(filedName).append(";\n")
+								.append("this.").append(fieldName)
+								.append(" = ").append(fieldName).append(";\n")
 								.append(indent).append("}\n");
 					}
 				}
 				columns.close();
 				contentBuffer.append("\n").append(getterSetterBuffer)
 						.append("}\n");
-				write(file, contentBuffer.toString());
+				String content = "";
+				System.out.println("table name => "+tableName);
+				if (tableName.equals("v9_tag"))
+					System.out.println(contentBuffer.toString());
+				content = JavaCodeFormatter.format(contentBuffer.toString());
+				write(file, content);
 			}
 			rs.close();
 		} catch (SQLException e) {
