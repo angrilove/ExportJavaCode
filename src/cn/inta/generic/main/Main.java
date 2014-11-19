@@ -1,7 +1,5 @@
 /*
- * Copyright (C) 2014.
- * Write by Anshen
- * All Right Reseved.
+ * Copyright (C) 2014. by Anshen
  * 
  */
 package cn.inta.generic.main;
