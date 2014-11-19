@@ -28,15 +28,17 @@ import cn.inta.generic.util.GeneratorUtils;
  *
  */
 public class GenericServiceImpl {
-	
+
 	public static void gen() {
 		String tabSpaces = "    ";
 		try {
 			String tableSchema = GeneratorUtils.getProperty("tableschema");
 			String basePackage = GeneratorUtils.getProperty("basepackage");
 			String implPackage = basePackage + ".service.impl";
-			boolean removeTablePrefix = StringUtils.equalsIgnoreCase("true", GeneratorUtils.getProperty("tableschema")) ? true : false;
-			File dir = new File((tableSchema + "." + implPackage).replace(".", "\\"));
+			boolean removeTablePrefix = StringUtils.equalsIgnoreCase("true",
+					GeneratorUtils.getProperty("tableschema")) ? true : false;
+			File dir = new File((tableSchema + "." + implPackage).replace(".",
+					"\\"));
 			if (dir.exists()) {
 				dir.delete();
 			}
@@ -50,12 +52,17 @@ public class GenericServiceImpl {
 			while (rs.next()) {
 				String tableName = rs.getString("TABLE_NAME").toLowerCase();
 				String tableComment = rs.getString("TABLE_COMMENT");
-				String[] splits = tableName.replace("-", " ").replace("_", " ").split(" ");
+				String[] splits = tableName.replace("-", " ").replace("_", " ")
+						.split(" ");
 				if (removeTablePrefix) {
 					splits = ArrayUtils.subarray(splits, 1, splits.length);
 				}
-				String className = StringUtils.remove(WordUtils.capitalize(StringUtils.join(splits, " ")), " ") + "ServiceImpl";
-				String fileName = tableSchema + "\\" + implPackage.replace(".", "\\") + "\\" + className + ".java";
+				String className = StringUtils.remove(
+						WordUtils.capitalize(StringUtils.join(splits, " ")),
+						" ") + "ServiceImpl";
+				String fileName = tableSchema + "\\"
+						+ implPackage.replace(".", "\\") + "\\" + className
+						+ ".java";
 				File file = new File(fileName);
 				if (file.exists()) {
 					file.delete();
@@ -75,28 +82,49 @@ public class GenericServiceImpl {
 						break;
 					} else if (columns.getString(1).contains("double")) {
 						keyType = "Double";
-					} else if (columns.getString(1).contains("date") || columns.getString(1).contains("time")) {
+					} else if (columns.getString(1).contains("date")
+							|| columns.getString(1).contains("time")) {
 						keyType = "Date";
 					}
 				}
-				contentBuffer.append("package ")
-					.append(basePackage).append(".service.impl;\n\nimport ").append(basePackage)
-					.append(".pojo.").append(className.replace("ServiceImpl", "")).append(";\n")
-					.append("import ").append(basePackage).append(".service.").append(className.replace("Impl", "")).append(";\n")
-					.append("import org.springframework.stereotype.Service;\n")
-					.append("import org.springframework.transaction.annotation.Transactional;\n")
-					.append("import javax.annotation.PostConstruct;\n")
-					.append("import com.ingta.framework.ibatis.service.impl.IbatisBaseServiceImpl;\n\n")
-					.append("/**\n * ").append(className).append(" ")
-					.append(tableComment).append(" 业务实现\n * @author Anshen\n")
-					.append(" */\n").append("@Service(\"").append(className.replace("Impl", "")).append("\")\n@Transactional(readOnly = true)\npublic class ")
-					.append(className).append(" extends IbatisBaseServiceImpl<")
-					.append(className.replace("ServiceImpl", "")).append(", ").append(keyType).append("> implements ")
-					.append(className.replace("Impl", "")).append(" {\n\n").append(tabSpaces)
-					.append("@PostConstruct\n").append(tabSpaces).append("public void init() {\n")
-					.append(tabSpaces).append(tabSpaces).append("ibatisDao.init(")
-					.append(className.replace("ServiceImpl", "")).append(".class, ")
-					.append(keyType).append(".class);\n").append(tabSpaces).append("}\n");
+				contentBuffer
+						.append("package ")
+						.append(basePackage)
+						.append(".service.impl;\n\nimport ")
+						.append(basePackage)
+						.append(".pojo.")
+						.append(className.replace("ServiceImpl", ""))
+						.append(";\n")
+						.append("import ")
+						.append(basePackage)
+						.append(".service.")
+						.append(className.replace("Impl", ""))
+						.append(";\n")
+						.append("import org.springframework.stereotype.Service;\n")
+						.append("import org.springframework.transaction.annotation.Transactional;\n")
+						.append("import javax.annotation.PostConstruct;\n")
+						.append("import com.ingta.framework.ibatis.service.impl.IbatisBaseServiceImpl;\n\n")
+						.append("/**\n * ")
+						.append(className)
+						.append(" ")
+						.append(tableComment)
+						.append(" 业务实现\n * @author Anshen\n")
+						.append(" */\n")
+						.append("@Service(\"")
+						.append(className.replace("Impl", ""))
+						.append("\")\n@Transactional(readOnly = true)\npublic class ")
+						.append(className)
+						.append(" extends IbatisBaseServiceImpl<")
+						.append(className.replace("ServiceImpl", ""))
+						.append(", ").append(keyType).append("> implements ")
+						.append(className.replace("Impl", "")).append(" {\n\n")
+						.append(tabSpaces).append("@PostConstruct\n")
+						.append(tabSpaces).append("public void init() {\n")
+						.append(tabSpaces).append(tabSpaces)
+						.append("ibatisDao.init(")
+						.append(className.replace("ServiceImpl", ""))
+						.append(".class, ").append(keyType)
+						.append(".class);\n").append(tabSpaces).append("}\n");
 
 				FileOutputStream fos = new FileOutputStream(file);
 				contentBuffer.append("}\n");

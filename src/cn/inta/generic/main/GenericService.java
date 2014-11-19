@@ -28,7 +28,7 @@ import cn.inta.generic.util.GeneratorUtils;
  *
  */
 public class GenericService {
-	
+
 	public static void gen() {
 		try {
 			Connection connection = GeneratorUtils.getConnection();
@@ -36,8 +36,10 @@ public class GenericService {
 			String tableSchema = GeneratorUtils.getProperty("tableschema");
 			String basePackage = GeneratorUtils.getProperty("basepackage");
 			String servicePackage = basePackage + ".service";
-			boolean removeTablePrefix = StringUtils.equalsIgnoreCase("true", GeneratorUtils.getProperty("tableschema")) ? true : false;
-			File dir = new File((tableSchema + "." + servicePackage).replace(".", "\\"));
+			boolean removeTablePrefix = StringUtils.equalsIgnoreCase("true",
+					GeneratorUtils.getProperty("tableschema")) ? true : false;
+			File dir = new File((tableSchema + "." + servicePackage).replace(
+					".", "\\"));
 			if (dir.exists()) {
 				dir.delete();
 			}
@@ -50,12 +52,17 @@ public class GenericService {
 			while (rs.next()) {
 				String tableName = rs.getString("TABLE_NAME").toLowerCase();
 				String tableComment = rs.getString("TABLE_COMMENT");
-				String[] splits = tableName.replace("-", " ").replace("_", " ").split(" ");
+				String[] splits = tableName.replace("-", " ").replace("_", " ")
+						.split(" ");
 				if (removeTablePrefix) {
 					splits = ArrayUtils.subarray(splits, 1, splits.length);
 				}
-				String className = StringUtils.remove(WordUtils.capitalize(StringUtils.join(splits, " ")), " ") + "Service";
-				String fileName = tableSchema + "\\" + servicePackage.replace(".", "\\") + "\\" + className + ".java";
+				String className = StringUtils.remove(
+						WordUtils.capitalize(StringUtils.join(splits, " ")),
+						" ") + "Service";
+				String fileName = tableSchema + "\\"
+						+ servicePackage.replace(".", "\\") + "\\" + className
+						+ ".java";
 				File file = new File(fileName);
 				if (file.exists()) {
 					file.delete();
@@ -74,20 +81,27 @@ public class GenericService {
 						break;
 					} else if (columns.getString(1).contains("double")) {
 						keyType = "Double";
-					} else if (columns.getString(1).contains("date") || columns.getString(1).contains("time")) {
+					} else if (columns.getString(1).contains("date")
+							|| columns.getString(1).contains("time")) {
 						keyType = "Date";
 					}
 				}
 				StringBuffer contentBuffer = new StringBuffer();
-				contentBuffer.append("package ")
-					.append(servicePackage).append(";\n\nimport ").append(basePackage)
-					.append(".pojo.").append(className.replace("Service", ""))
-					.append(";\nimport com.ingta.framework.ibatis.service.IbatisBaseService;\n\n")
-					.append("/**\n * ").append(className).append(" ")
-					.append(tableComment).append(" 业务逻辑\n * @author Anshen\n")
-					.append(" */\n").append("public interface ")
-					.append(className).append(" extends IbatisBaseService<")
-					.append(className.replace("Service", "")).append(", ").append(keyType).append("> {\n\n");
+				contentBuffer
+						.append("package ")
+						.append(servicePackage)
+						.append(";\n\nimport ")
+						.append(basePackage)
+						.append(".pojo.")
+						.append(className.replace("Service", ""))
+						.append(";\nimport com.ingta.framework.ibatis.service.IbatisBaseService;\n\n")
+						.append("/**\n * ").append(className).append(" ")
+						.append(tableComment)
+						.append(" 业务逻辑\n * @author Anshen\n").append(" */\n")
+						.append("public interface ").append(className)
+						.append(" extends IbatisBaseService<")
+						.append(className.replace("Service", "")).append(", ")
+						.append(keyType).append("> {\n\n");
 
 				FileOutputStream fos = new FileOutputStream(file);
 				contentBuffer.append("}\n");

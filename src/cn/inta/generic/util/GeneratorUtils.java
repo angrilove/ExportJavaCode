@@ -17,11 +17,11 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class GeneratorUtils {
-	
+
 	private static Properties info;
-	
+
 	private static Connection connection;
-	
+
 	static {
 		info = new Properties();
 		try {
@@ -32,7 +32,7 @@ public class GeneratorUtils {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static String getProperty(String key) {
 		return info.getProperty(key);
 	}
@@ -40,7 +40,8 @@ public class GeneratorUtils {
 	public static Connection getConnection() {
 		try {
 			Class.forName(info.getProperty("driver"));
-			connection = DriverManager.getConnection(info.getProperty("url"), info);
+			connection = DriverManager.getConnection(info.getProperty("url"),
+					info);
 			connection.setCatalog("information_schema");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -49,7 +50,7 @@ public class GeneratorUtils {
 		}
 		return connection;
 	}
-	
+
 	public static ResultSet query(PreparedStatement pstm) {
 		try {
 			pstm.execute();
@@ -59,7 +60,7 @@ public class GeneratorUtils {
 		}
 		return null;
 	}
-	
+
 	public static void closeConnection() {
 		try {
 			if (null != connection && !connection.isClosed()) {
