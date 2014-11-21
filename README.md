@@ -1,4 +1,4 @@
 ExportJavaCode
 ==============
 
-Export java source code from db.
+Export java source code from the structure of data table.
